@@ -28,14 +28,17 @@ main =
 type alias Model =
     { card1 : Card
     , card2 : Card
+    , card3 : Card
     }
+
+
+
+-- Tipos estructurados
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { card1 = Ace
-      , card2 = King
-      }
+    ( Model King Ace King
     , Cmd.none
     )
 
@@ -54,6 +57,7 @@ type Card
     | Jack
     | Queen
     | King
+    | DPOI
 
 
 
@@ -63,8 +67,10 @@ type Card
 type Msg
     = DrawCard1
     | DrawCard2
+    | DrawCard3
     | NewCard1 Card
     | NewCard2 Card
+    | NewCard3 Card
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -94,6 +100,18 @@ update msg model =
             , Cmd.none
             )
 
+        NewCard3 newCard3 ->
+            ( { model
+                | card3 = newCard3
+              }
+            , Cmd.none
+            )
+
+        DrawCard3 ->
+            ( model
+            , Random.generate NewCard3 cardGenerator
+            )
+
 
 cardGenerator : Random.Generator Card
 cardGenerator =
@@ -111,6 +129,7 @@ cardGenerator =
         , Queen
         , King
         , Ace
+        , DPOI
         ]
 
 
@@ -133,14 +152,13 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
     div []
+        --tagName  tagProps              tagContent
         [ button [ onClick DrawCard1 ] [ text "Draw card1" ]
         , button [ onClick DrawCard2 ] [ text "Draw card2" ]
-        , div
-            [ style "font-size" "12em" ]
-            [ text (viewCard model.card1) ]
-        , div
-            [ style "font-size" "12em" ]
-            [ text (viewCard model.card2) ]
+        , button [ onClick DrawCard3 ] [ text "Draw card3" ]
+        , div [ style "font-size" "12em" ] [ text (viewCard model.card1) ]
+        , div [ style "font-size" "12em" ] [ text (viewCard model.card2) ]
+        , div [ style "font-size" "12em" ] [ text (viewCard model.card3) ]
         ]
 
 
@@ -185,3 +203,6 @@ viewCard card =
 
         King ->
             "🂮"
+
+        DPOI ->
+            "DPOI"
